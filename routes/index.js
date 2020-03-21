@@ -1,10 +1,10 @@
 const express=require('express');
 const router=express.Router();
 const {app}=require('../app');
-const {createExpense}=require('../controllers/expense.controller')
+const {getExpense,createExpense}=require('../controllers/expenseController')
 
-//Creation of expense
-router.post('/', createExpense);
+router.get('/',getExpense); //Collection of expense
+router.post('/', createExpense);//Creation of expense
 
 
 module.exports=router;
