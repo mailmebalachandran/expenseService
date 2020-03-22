@@ -14,12 +14,12 @@ const expenseSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    perHead: {
-        type: Number,
+    amount: {
+        type: String,
         required: true
     },
-    amount: {
-        type: Number,
+    perHead: {
+        type: String
     },
     createdDate: {
         type: Date,
