@@ -18,7 +18,7 @@ async function validateCreate(body) {
 //Validation for Updation of Expense
 async function validateUpdate(body){
     const joischema = Joi.object({
-        id: Joi.string().min(10).max(50).required(),
+        id: Joi.string().required(),
         spentBy: Joi.string().min(5).max(50).required(),
         spentTo: Joi.array().required(),
         createdBy: Joi.string().min(5).max(50).required(),
@@ -31,7 +31,7 @@ async function validateUpdate(body){
 
 async function validateDelete(body){
     const joischema = Joi.object({
-        id: Joi.string().min(10).max(50).required()
+        id: Joi.string().required()
     });
     const joivalidate = joischema.validate(body);
     return joivalidate;

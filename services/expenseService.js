@@ -3,7 +3,7 @@ const { Expense } = require('../models/expenseUser');
 
 
 //Collection Of Expense
-async function getExpense() {
+const getExpense = async () => {
     const getexpense = await Expense.find();
     return getexpense;
 }
@@ -12,43 +12,31 @@ async function getExpense() {
 async function saveExpense(expense) {
     try {
         const expenseData = new Expense(expense);
-        const result = await expenseData.save();
+        const savedExpense = await expenseData.save();
+        return savedExpense
     }
-    catch(err) {
+    catch (err) {
         return err;
     }
 }
 
 //Updation of Expense
-async function updateExpense(reqid, expense) {
+async function updateExpense(expenseData) {
     try {
-        const spentTo = expense.spentTo.length;
-        const perHead = expense.perHead;
-        const amount = spentTo * perHead;
-        const updateexpense = await Expense.findByIdAndUpdate({ _id: reqid }, {
-            $set: {
-                spentBy: expense.spentBy,
-                spentTo: expense.spentTo,
-                createdBy: expense.createdBy,
-                perHead: expense.perHead,
-                amount: amount
-            }
-        }
-
-        );
+        expenseId = expenseData.id
+        const updateExpense = await Expense.findByIdAndUpdate({ _id: expenseId }, { $set: expenseData });
         return updateExpense;
     }
     catch (err) {
-        console.log("Error to be handled");
+        console.log("Service Error: Update Expense " + err);
     }
 }
 
 //Deletion of Expense
-async function deleteExpense(req) {
+async function deleteExpense(deleteId) {
     try {
-        const expense = await Expense.findByIdAndDelete(req);
+        const expense = await Expense.findByIdAndDelete(deleteId);
         return expense;
-
     }
     catch (err) {
         console.log("Error to be handled:" + err);

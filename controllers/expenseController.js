@@ -9,13 +9,14 @@ const expensevalidation = require('../validation/expenseValidation');
 async function getExpense(req, res) {
     try {
         let expense = await expenseService.getExpense();
-        if (!expense) {
-            return res.status(400).send({ message: "Expense was not found" })
+        if (expense == null) {
+            return res.status(404).send({ message: "No Expense is found in the system" })
         }
-        res.status(200).send(expense);
+        return res.status(200).send(expense);
     }
     catch (err) {
-        console.log("Error to be handled:" + err);
+        console.log("Controller Error: Get Expense " + err);
+        return res.status(500).send({ message: "Internal Server Error" });
     }
 }
 
@@ -25,15 +26,21 @@ async function createExpense(req, res) {
 
         //Validate for Creation of Expense
         const { error } = await expensevalidation.validateCreate(req.body);
-        console.log("in controller" + error);
 
-        if (error) res.status(400).send({ message: error.details[0].message });
+        if (error) {
+            return res.status(400)
+                .send({
+                    message: error.details[0].message
+                });
+        }
 
-        expenseService.saveExpense(req.body);
-        res.status(200).send({ message: "New Expense is Created" })
+        await expenseService.saveExpense(req.body);
+
+        return res.status(200).send({ message: "New Expense is Created" })
     }
     catch (err) {
-        console.log("Error to be handled:", err);
+        console.log("Controller Error: Create Expense " + err);
+        return res.status(500).send({ message: "Internal Server Error" });
     }
 
 }
@@ -41,24 +48,29 @@ async function createExpense(req, res) {
 //Updation of Expense
 async function updateExpense(req, res) {
     try {
-        const { id, spentBy, spentTo, createdBy, perHead, amount } = req.body;
-        const expenses = {
-            spentBy: req.body.spentBy,
-            spentTo: req.body.spentTo,
-            createdBy: req.body.createdBy,
-            perHead: req.body.perHead,
-        }
+
         const { error } = await expensevalidation.validateUpdate(req.body);
 
-        if (error) return res.status(400).send({ message: error.details[0].message });
+        if (error) {
+            return res.status(400)
+                .send({
+                    message: error.details[0].message
+                });
+        }
 
-        const expense = await expenseService.updateExpense(req.body.id, expenses);
+        const expense = await expenseService.updateExpense(req.body);
 
-        return res.status(200).send({ message: "Expense is Updated Successfully" });
+        if (expense != null) {
+            return res.status(200).send({ message: "Expense updated successfully" });
+        }
+        else {
+            return res.status(404).send({ message: "Expense doesn't exist in the system" });
+        }
 
     }
     catch (err) {
-        console.log('Error to be handled:' + err);
+        console.log("Controller Error: Update Expense " + err);
+        return res.status(500).send({ message: "Internal Server Error" });
     }
 }
 
@@ -67,13 +79,25 @@ async function deleteExpense(req, res) {
     try {
         const { error } = await expensevalidation.validateDelete(req.body);
 
-        if (error) return res.status(400).send({ message: error.details[0].message });
+        if (error) {
+            return res.status(400)
+                .send({
+                    message: error.details[0].message
+                });
+        }
 
-        const expense = expenseService.deleteExpense(req.body.id);
-        res.status(200).send({ message: "Expense deleted successfully" });
+        const expense = await expenseService.deleteExpense(req.body.id);
+
+        if (expense != null) {
+            return res.status(200).send({ message: "Expense deleted successfully" });
+        }
+        else {
+            return res.status(404).send({ message: "Expense doesn't exist in the system" });
+        }
     }
     catch (err) {
-        console("Error to be handled" + err);
+        console.log("Controller Error: Delete Expense " + err);
+        return res.status(500).send({ message: "Internal Server Error" });
     }
 
 }
