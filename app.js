@@ -9,7 +9,7 @@ app.use(express.json());
 app.use('/api/expService', router);
 
 //Connection for the MongoDb
-mongoose.connect('mongodb://', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://localhost:27017/expense', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(function () {
         console.log("Connected to Mongodb")
     })

@@ -24,6 +24,12 @@ async function getExpense(req, res) {
 async function createExpense(req, res) {
     try {
 
+        //Calculation for PerHead
+        const userreq=req.body;
+        const perhead=Math.round(userreq.amount/userreq.spentTo.length);
+        const perHead={perHead:perhead};
+        const expense={...userreq, ...perHead}
+
         //Validate for Creation of Expense
         const { error } = await expensevalidation.validateCreate(req.body);
 
@@ -33,7 +39,8 @@ async function createExpense(req, res) {
                     message: error.details[0].message
                 });
         }
-        await expenseService.saveExpense(req.body);
+        
+        await expenseService.saveExpense(expense);
 
         return res.status(200).send({ message: "New Expense is Created" })
     }
@@ -47,6 +54,11 @@ async function createExpense(req, res) {
 //Updation of Expense
 async function updateExpense(req, res) {
     try {
+        //Calculation for PerHead
+        const userreq=req.body;
+        const perhead=Math.round(userreq.amount/userreq.spentTo.length);
+        const perHead={perHead:perhead};
+        const expensedata={...userreq, ...perHead}
 
         const { error } = await expensevalidation.validateUpdate(req.body);
 
@@ -57,7 +69,8 @@ async function updateExpense(req, res) {
                 });
         }
 
-        const expense = await expenseService.updateExpense(req.body);
+        
+        const expense = await expenseService.updateExpense(expensedata);
 
         if (expense != null) {
             return res.status(200).send({ message: "Expense updated successfully" });
