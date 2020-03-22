@@ -9,12 +9,13 @@ app.use(express.json());
 app.use('/api/expService', router);
 
 //Connection for the MongoDb
-mongoose.connect('mongodb+srv://admin:admin@jesttest-xuodc.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(function () {
         console.log("Connected to Mongodb")
     })
     .catch(function (err) {
-        console.log("Error:", +err)
+        console.log("Cannot be connected to Db:", +err)
+
     });
 
 //Connection for Browser

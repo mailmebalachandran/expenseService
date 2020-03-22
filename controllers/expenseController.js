@@ -33,7 +33,6 @@ async function createExpense(req, res) {
                     message: error.details[0].message
                 });
         }
-
         await expenseService.saveExpense(req.body);
 
         return res.status(200).send({ message: "New Expense is Created" })

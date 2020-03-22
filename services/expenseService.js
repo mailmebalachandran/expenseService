@@ -1,4 +1,3 @@
-const { expense } = require('../controllers/expenseController');
 const { Expense } = require('../models/expenseUser');
 
 
