@@ -9,7 +9,8 @@ app.use(express.json());
 app.use('/api/expService', router);
 
 //Connection for the MongoDb
-mongoose.connect('mongodb+srv://admin:admin@rentapp-vlhw0.mongodb.net/test?retryWrites=true', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://admin:admin@rentcluster-b1mim.mongodb.net/test?retryWrites=true&w=majority', 
+{ useNewUrlParser: true, useUnifiedTopology: true })
     .then(function () {
         console.log("Connected to Mongodb")
     })
