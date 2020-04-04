@@ -5,9 +5,12 @@ const Joi = require('@hapi/joi');
 //Validation for Creation of Expense
 async function validateCreate(body) {
     const joischema = Joi.object({
-        spentBy: Joi.string().min(5).max(50).required(),
+        expenseName: Joi.string().min(1).max(50).required(),
+        expenseDescription: Joi.string().min(1).max(50),
+        defaultExpense: Joi.boolean().required(),
+        spentBy: Joi.string().min(1).max(50).required(),
         spentTo: Joi.array().required(),
-        createdBy: Joi.string().min(5).max(50).required(),
+        createdBy: Joi.string().min(1).max(50).required(),
         amount: Joi.string().required(),
         perHead: Joi.string()
     });
@@ -19,9 +22,12 @@ async function validateCreate(body) {
 async function validateUpdate(body){
     const joischema = Joi.object({
         id: Joi.string().required(),
-        spentBy: Joi.string().min(5).max(50).required(),
+        expenseName: Joi.string().min(1).max(50).required(),
+        expenseDescription: Joi.string().min(1).max(50),
+        defaultExpense: Joi.boolean().required(),
+        spentBy: Joi.string().min(1).max(50).required(),
         spentTo: Joi.array().required(),
-        createdBy: Joi.string().min(5).max(50).required(),
+        createdBy: Joi.string().min(1).max(50).required(),
         amount: Joi.string().required(),
         perHead: Joi.string()
     });

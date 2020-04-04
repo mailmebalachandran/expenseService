@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 
 //Creation of Schema for the Expense
 const expenseSchema = mongoose.Schema({
+    expenseName: {
+        type: String,
+        required: true
+    },
+    expenseDescription: {
+        type: String
+    },
+    defaultExpense: {
+        type: Boolean,
+        required: true
+    },
     spentBy: {
         type: String,
         required: true

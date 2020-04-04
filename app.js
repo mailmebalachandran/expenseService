@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const router = require('./routes/index')
 const mongoose = require('mongoose');
+require('dotenv/config');
 
 app.use(express.json());
 
@@ -9,7 +10,7 @@ app.use(express.json());
 app.use('/api/expService', router);
 
 //Connection for the MongoDb
-mongoose.connect('mongodb+srv://admin:admin@rentcluster-b1mim.mongodb.net/test?retryWrites=true&w=majority', 
+mongoose.connect(process.env.DB_CONNECTION, 
 { useNewUrlParser: true, useUnifiedTopology: true })
     .then(function () {
         console.log("Connected to Mongodb")
@@ -20,7 +21,7 @@ mongoose.connect('mongodb+srv://admin:admin@rentcluster-b1mim.mongodb.net/test?r
     });
 
 //Connection for Browser
-const port = process.env.port || 4000;
+const port = process.env.SERVICE_PORT || 4000;
 app.listen(port, () => {
     console.log('Listening to the port:' + port);
 });

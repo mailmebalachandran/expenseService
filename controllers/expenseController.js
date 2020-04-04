@@ -24,12 +24,6 @@ async function getExpense(req, res) {
 async function createExpense(req, res) {
     try {
 
-        //Calculation for PerHead
-        const userreq=req.body;
-        const perhead=Math.round(userreq.amount/userreq.spentTo.length);
-        const perHead={perHead:perhead};
-        const expense={...userreq, ...perHead}
-
         //Validate for Creation of Expense
         const { error } = await expensevalidation.validateCreate(req.body);
 
@@ -39,8 +33,12 @@ async function createExpense(req, res) {
                     message: error.details[0].message
                 });
         }
-        
-        await expenseService.saveExpense(expense);
+
+        //Calculation for PerHead
+        const perhead = Math.round(req.body.amount / req.body.spentTo.length);
+        req.body.perHead = perhead
+
+        await expenseService.saveExpense(req.body);
 
         return res.status(200).send({ message: "New Expense is Created" })
     }
@@ -54,11 +52,6 @@ async function createExpense(req, res) {
 //Updation of Expense
 async function updateExpense(req, res) {
     try {
-        //Calculation for PerHead
-        const userreq=req.body;
-        const perhead=Math.round(userreq.amount/userreq.spentTo.length);
-        const perHead={perHead:perhead};
-        const expensedata={...userreq, ...perHead}
 
         const { error } = await expensevalidation.validateUpdate(req.body);
 
@@ -69,8 +62,11 @@ async function updateExpense(req, res) {
                 });
         }
 
-        
-        const expense = await expenseService.updateExpense(expensedata);
+        //Calculation for PerHead
+        const perhead = Math.round(req.body.amount / req.body.spentTo.length);
+        req.body.perHead = perhead
+
+        const expense = await expenseService.updateExpense(req.body);
 
         if (expense != null) {
             return res.status(200).send({ message: "Expense updated successfully" });
@@ -114,8 +110,55 @@ async function deleteExpense(req, res) {
 
 }
 
+//Calculate total for each member
+const getTotal = async (expenses, currentMember) => {
+    let total=0;
+    expenses.map((expense) => {
+        expense.spentTo.map(member => {
+            if (member === currentMember) {
+                total += parseInt(expense.perHead);
+                // console.log(total)
+            }
+        });
+    });
+    return total;
+}
+//Calculate Dashboard
+async function getDashboard(req, res) {
+    try {
+        const expenses = await expenseService.getExpense();
+        let resp = [];
 
-exports.getExpense = getExpense;
-exports.createExpense = createExpense;
-exports.updateExpense = updateExpense;
-exports.deleteExpense = deleteExpense;
+        expenses.map((expense) => {
+            if (expense.defaultExpense === true) {
+                expense.spentTo.map(async (member) => {
+                    let total = await getTotal(expenses, member);
+                    console.log(total);
+                    // res.push();
+                });
+            }
+        })
+
+        if (expenses != null) {
+            return res.status(200).send(expenses);
+        }
+        else {
+            return res.status(404).send({ message: "No expense available in this system" });
+        }
+    }
+    catch (err) {
+        console.log("Controller Error: Delete Expense " + err);
+        return res.status(500).send({ message: "Internal Server Error" });
+    }
+
+}
+
+//Get all Dashboard Expense
+
+module.exports = {
+    getExpense,
+    createExpense,
+    updateExpense,
+    deleteExpense,
+    getDashboard
+};
