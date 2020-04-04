@@ -3,15 +3,17 @@ const app = express();
 const router = require('./routes/index')
 const mongoose = require('mongoose');
 require('dotenv/config');
+const swaggerUi = require('swagger-ui-express')
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./Docs/expense.yaml');
 
 app.use(express.json());
-
-
 app.use('/api/expService', router);
+app.use('/api/expService/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //Connection for the MongoDb
-mongoose.connect(process.env.DB_CONNECTION, 
-{ useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DB_CONNECTION,
+    { useNewUrlParser: true, useUnifiedTopology: true })
     .then(function () {
         console.log("Connected to Mongodb")
     })

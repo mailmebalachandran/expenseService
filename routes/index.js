@@ -13,7 +13,7 @@ router.get('/getExpense', jwtAuthValidation, getExpense); //Collection of expens
 router.post('/createExpense', jwtAuthValidation, createExpense); //Creation of expense
 router.put('/updateExpense', jwtAuthValidation, updateExpense); //Updation of expense
 router.delete('/deleteExpense', jwtAuthValidation, deleteExpense); //Deletion of expense
-router.get('/getDashboard', jwtAuthValidation, getDashboard)
+router.get('/getDashboard', jwtAuthValidation, getDashboard); //Dashboard Expense
 
 
 module.exports = router;

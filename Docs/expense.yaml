@@ -1,0 +1,147 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Rent Expense Service"
+  contact:
+    email: "apiteam@swagger.io"
+host: "localhost:4000"
+basePath: "/api/expService/"
+
+tags:
+- name: "Expense"
+  description: "Expense Management By Admin"
+schemes:
+- "http"
+paths:
+  /createExpense:
+    post:
+      tags:
+      - "Expense"
+      summary: "Create new Expense"
+      description: "Create new Expense in the system by admin user"
+      operationId: "saveExpense"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Object to create Expense"
+        required: true
+        schema:
+          $ref: "#/definitions/Expense"
+      - in: "header"
+        name: "authorization"
+        description: "bearer tokenValue"
+        required: true
+        schema:
+          $ref: "#/definitions/AuthToken"
+      responses:
+        201:
+          description: "New Expense Created Successfully"
+          schema:
+            type: "object"
+            $ref: "#/definitions/CreateExpenseResponse"
+        400:
+          description: "Invalid Request Data"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Server Error"
+  /getExpense:
+    get:
+      tags:
+      - "Expense"
+      summary: "Get All Expense"
+      description: "Retrieve all expense available in the system"
+      operationId: "getExpense"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "authorization"
+        description: "bearer tokenValue"
+        required: true
+        schema:
+          $ref: "#/definitions/AuthToken"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/getExpenseResponse"
+        401:
+          description: "Unauthorized"
+              
+        500:
+          description: "Server Error"
+definitions:
+  Expense:
+    type: "object"
+    properties:
+      expenseName:
+        type: "string"
+        format: "string"
+      expenseDescription:
+        type: "string"
+        format: "string"
+      defaultExpense:
+        type: "boolean"
+        format: "string"
+      spentBy:
+        type: "string"
+        format: "string"
+      spentTo:
+        type: "string"
+        format: "string"
+      createdBy:
+        type: "string"
+        format: "string"
+      amount:
+        type: "string"
+        format: "string"
+    xml:
+      name: "User"
+  AuthToken:
+      type: "string"
+      xml:
+        name: "Auth"
+  
+  CreateExpenseResponse:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+          format: "string"
+      xml:
+        name: "CreateExpenseResponse"
+  
+  getExpenseResponse:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "string"
+      expenseName:
+        type: "string"
+        format: "string"
+      expenseDescription:
+        type: "string"
+        format: "string"
+      defaultExpense:
+        type: "boolean"
+        format: "string"
+      spentBy:
+        type: "string"
+        format: "string"
+      spentTo:
+        type: "string"
+        format: "string"
+      createdBy:
+        type: "string"
+        format: "string"
+      amount:
+        type: "string"
+        format: "string"
+    xml:
+      name: "User"      
