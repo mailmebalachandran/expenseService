@@ -100,19 +100,6 @@ async function deleteExpense(req, res) {
     return res.status(500).send({ message: "Internal Server Error" });
   }
 }
-
-//Calculate total for each member
-// const getTotal = async (expenses, currentMember) => {
-//   let total = 0;
-//   expenses.map((expense) => {
-//     expense.spentTo.map((member) => {
-//       if (member === currentMember) {
-//         total += parseInt(expense.perHead);
-//       }
-//     });
-//   });
-//   return total;
-// };
 async function getUsers(req) {
   try {
     let res = await axios.get(process.env.USER_SERVICE_URL + "/getUsers", req);
@@ -135,10 +122,9 @@ async function getDashboard(req, res) {
            {
               total += parseFloat(expense.perHead);
            }
-          // res.push();
         });
       });
-      resp.push({userName: user.UserName, TotalAmount : total});
+      resp.push({userName: user.UserName, totalAmount : total.toString()});
       
     });
 
