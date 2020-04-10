@@ -2,11 +2,13 @@ const express = require('express');
 const app = express();
 const router = require('./routes/index')
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv/config');
 const swaggerUi = require('swagger-ui-express')
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./Docs/expense.yaml');
 
+app.use(cors());
 app.use(express.json());
 app.use('/api/expService', router);
 app.use('/api/expService/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

@@ -10,7 +10,6 @@ async function validateCreate(body) {
         defaultExpense: Joi.boolean().required(),
         spentBy: Joi.string().min(1).max(50).required(),
         spentTo: Joi.array().required(),
-        createdBy: Joi.string().min(1).max(50).required(),
         amount: Joi.string().required(),
         perHead: Joi.string()
     });

@@ -39,7 +39,7 @@ const expenseSchema = mongoose.Schema({
 });
 
 //Creation of Collection for Expense
-const Expense = mongoose.model('Expense', expenseSchema);
+const Expense = mongoose.model('Expense', expenseSchema, 'Expense');
 
 exports.expenseSchema = expenseSchema;
 exports.Expense = Expense;

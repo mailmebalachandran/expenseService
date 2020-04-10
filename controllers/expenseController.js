@@ -31,14 +31,16 @@ async function createExpense(req, res) {
         message: error.details[0].message,
       });
     }
-
+    const token = req.headers['authorization'];
+    const authData = await decodeToken(token.split(' ')[1]);
+    req.body.createdBy = authData.user._id
     //Calculation for PerHead
-    const perhead = Math.round(req.body.amount / req.body.spentTo.length);
+    const perhead = Math.round(parseFloat(req.body.amount) / parseInt(req.body.spentTo.length));
     req.body.perHead = perhead;
 
-    await expenseService.saveExpense(req.body);
+    const savedExpense =await expenseService.saveExpense(req.body);
 
-    return res.status(200).send({ message: "New Expense is Created" });
+    return res.status(200).send(savedExpense);
   } catch (err) {
     console.log("Controller Error: Create Expense " + err);
     return res.status(500).send({ message: "Internal Server Error" });
@@ -131,15 +133,13 @@ async function getDashboard(req, res) {
       let total = 0;
       expenses.map((expense) => {
         expense.spentTo.map(async (member) => {
-           if(member === user.UserName)
-           {
-              total += parseFloat(expense.perHead);
-           }
+          if (member === user.UserName) {
+            total += parseFloat(expense.perHead);
+          }
           // res.push();
         });
       });
-      resp.push({userName: user.UserName, TotalAmount : total});
-      
+      resp.push({ userName: user.UserName, TotalAmount: total });
     });
 
     if (expenses != null) {
@@ -153,6 +153,19 @@ async function getDashboard(req, res) {
     console.log("Controller Error: Delete Expense " + err.response);
     return res.status(500).send({ message: "Internal Server Error" });
   }
+}
+
+const decodeToken = async (token) => {
+  const tokenDetails = {
+      "access_token": token
+  }
+  return await axios.post(process.env.AUTH_SERVICE_URL + "/decodeToken", tokenDetails)
+      .then((res) => {
+          return res.data;
+      })
+      .catch((err) => {
+          return ({ message: err });
+      });
 }
 
 //Get all Dashboard Expense
