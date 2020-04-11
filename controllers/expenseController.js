@@ -5,9 +5,39 @@ const expensevalidation = require("../validation/expenseValidation");
 const axios = require("axios");
 // require('dotenv').config({path : require('path').join(__dirname, '../.env')});
 //Collection of Expense
+async function getExpenses(req, res) {
+  try {
+    let expense = await expenseService.getExpenses();
+    if (expense == null) {
+      return res
+        .status(404)
+        .send({ message: "No Expense is found in the system" });
+    }
+    let usersData = await getUsers(req);
+    let expenseDetails = {};
+    let expenses = [];
+    expense.map((expenseData) => {
+      usersData.map((user) => {
+        if (user._id == expenseData.spentBy) {
+          expenseDetails = {
+            ...expenseData._doc,
+            spentByUserName: user.FirstName,
+          };
+          expenses.push(expenseDetails);
+          return;
+        }
+      });
+    });
+    return res.status(200).send(expenses);
+  } catch (err) {
+    console.log("Controller Error: Get Expense " + err);
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+}
+
 async function getExpense(req, res) {
   try {
-    let expense = await expenseService.getExpense();
+    let expense = await expenseService.getExpense(req.query._id);
     if (expense == null) {
       return res
         .status(404)
@@ -31,14 +61,16 @@ async function createExpense(req, res) {
         message: error.details[0].message,
       });
     }
-    const token = req.headers['authorization'];
-    const authData = await decodeToken(token.split(' ')[1]);
-    req.body.createdBy = authData.user._id
+    const token = req.headers["authorization"];
+    const authData = await decodeToken(token.split(" ")[1]);
+    req.body.createdBy = authData.user._id;
     //Calculation for PerHead
-    const perhead = Math.round(parseFloat(req.body.amount) / parseInt(req.body.spentTo.length));
+    const perhead = Math.round(
+      parseFloat(req.body.amount) / parseInt(req.body.spentTo.length)
+    );
     req.body.perHead = perhead;
 
-    const savedExpense =await expenseService.saveExpense(req.body);
+    const savedExpense = await expenseService.saveExpense(req.body);
 
     return res.status(200).send(savedExpense);
   } catch (err) {
@@ -49,9 +81,10 @@ async function createExpense(req, res) {
 
 //Updation of Expense
 async function updateExpense(req, res) {
+  
   try {
     const { error } = await expensevalidation.validateUpdate(req.body);
-
+    
     if (error) {
       return res.status(400).send({
         message: error.details[0].message,
@@ -61,11 +94,10 @@ async function updateExpense(req, res) {
     //Calculation for PerHead
     const perhead = Math.round(req.body.amount / req.body.spentTo.length);
     req.body.perHead = perhead;
-
     const expense = await expenseService.updateExpense(req.body);
-
+    console.log(expense);
     if (expense != null) {
-      return res.status(200).send({ message: "Expense updated successfully" });
+      return res.status(200).send(expense);
     } else {
       return res
         .status(404)
@@ -102,27 +134,15 @@ async function deleteExpense(req, res) {
     return res.status(500).send({ message: "Internal Server Error" });
   }
 }
-
-//Calculate total for each member
-// const getTotal = async (expenses, currentMember) => {
-//   let total = 0;
-//   expenses.map((expense) => {
-//     expense.spentTo.map((member) => {
-//       if (member === currentMember) {
-//         total += parseInt(expense.perHead);
-//       }
-//     });
-//   });
-//   return total;
-// };
 async function getUsers(req) {
   try {
     let res = await axios.get(process.env.USER_SERVICE_URL + "/getUsers", req);
     return res.data;
   } catch (err) {
-    res.status(500).send({ message: "Error in getting the Users" });
+    throw err;
   }
 }
+
 //Calculate Dashboard
 async function getDashboard(req, res) {
   try {
@@ -133,7 +153,7 @@ async function getDashboard(req, res) {
       let total = 0;
       expenses.map((expense) => {
         expense.spentTo.map(async (member) => {
-          if (member === user.UserName) {
+          if (member === user._id) {
             total += parseFloat(expense.perHead);
           }
           // res.push();
@@ -157,20 +177,22 @@ async function getDashboard(req, res) {
 
 const decodeToken = async (token) => {
   const tokenDetails = {
-      "access_token": token
-  }
-  return await axios.post(process.env.AUTH_SERVICE_URL + "/decodeToken", tokenDetails)
-      .then((res) => {
-          return res.data;
-      })
-      .catch((err) => {
-          return ({ message: err });
-      });
-}
+    access_token: token,
+  };
+  return await axios
+    .post(process.env.AUTH_SERVICE_URL + "/decodeToken", tokenDetails)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      return { message: err };
+    });
+};
 
 //Get all Dashboard Expense
 
 module.exports = {
+  getExpenses,
   getExpense,
   createExpense,
   updateExpense,

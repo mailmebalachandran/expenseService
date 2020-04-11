@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+    getExpenses,
     getExpense,
     createExpense,
     updateExpense,
@@ -10,6 +11,7 @@ const {
 const jwtAuthValidation = require('./jwtAuth');
 const categoryController = require('../controllers/categoryController');
 
+router.get('/getExpenses', jwtAuthValidation, getExpenses); //Collection of expenses
 router.get('/getExpense', jwtAuthValidation, getExpense); //Collection of expense
 router.post('/createExpense', jwtAuthValidation, createExpense); //Creation of expense
 router.put('/updateExpense', jwtAuthValidation, updateExpense); //Updation of expense

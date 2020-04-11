@@ -1,9 +1,14 @@
 const { Expense } = require('../models/expenseUser');
-
+const ObjectID = require('mongodb').ObjectID;
 
 //Collection Of Expense
-const getExpense = async () => {
-    const getexpense = await Expense.find();
+const getExpenses = async () => {
+    const getexpenses = await Expense.find();
+    return getexpenses;
+}
+
+const getExpense = async (_id) => {
+    const getexpense = await Expense.findOne({_id});
     return getexpense;
 }
 
@@ -22,8 +27,7 @@ async function saveExpense(expense) {
 //Updation of Expense
 async function updateExpense(expenseData) {
     try {
-        expenseId = expenseData.id
-        const updateExpense = await Expense.findByIdAndUpdate({ _id: expenseId }, { $set: expenseData });
+        const updateExpense = await Expense.findByIdAndUpdate({ _id: ObjectID(expenseData._id) }, { $set: expenseData });
         return updateExpense;
     }
     catch (err) {
@@ -42,4 +46,4 @@ async function deleteExpense(deleteId) {
     }
 }
 
-module.exports = { getExpense, saveExpense, updateExpense, deleteExpense };
+module.exports = { getExpenses, getExpense, saveExpense, updateExpense, deleteExpense };
