@@ -50,6 +50,36 @@ async function getExpense(req, res) {
   }
 }
 
+async function getDashboardBasedOnMonth(req, res) {
+  try {
+    const usersData = await getUsers(req);
+    const expenses = await expenseService.getDashboardBasedOnMonth(
+      req.query.month,
+      req.query.year
+    );
+    let resp = [];
+    usersData.map((user) => {
+      let total = 0;
+      expenses.map((expense) => {
+        expense.spentTo.map(async (member) => {
+          if (member === user._id) {
+            total += parseFloat(expense.perHead);
+          }
+        });
+      });
+      if (total !== 0)
+        resp.push({
+          UserName: user.FirstName + " " + user.LastName,
+          TotalAmount: total,
+        });
+    });
+    return res.status(200).send(resp);
+  } catch (err) {
+    console.log("Controller Error: Get Expense " + err);
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+}
+
 //Creation of new Expense
 async function createExpense(req, res) {
   try {
@@ -81,10 +111,9 @@ async function createExpense(req, res) {
 
 //Updation of Expense
 async function updateExpense(req, res) {
-  
   try {
     const { error } = await expensevalidation.validateUpdate(req.body);
-    
+
     if (error) {
       return res.status(400).send({
         message: error.details[0].message,
@@ -95,7 +124,6 @@ async function updateExpense(req, res) {
     const perhead = Math.round(req.body.amount / req.body.spentTo.length);
     req.body.perHead = perhead;
     const expense = await expenseService.updateExpense(req.body);
-    console.log(expense);
     if (expense != null) {
       return res.status(200).send(expense);
     } else {
@@ -112,18 +140,17 @@ async function updateExpense(req, res) {
 //Deletion of Expense
 async function deleteExpense(req, res) {
   try {
-    const { error } = await expensevalidation.validateDelete(req.body);
-
+    const { error } = await expensevalidation.validateDelete(req.query);
     if (error) {
       return res.status(400).send({
         message: error.details[0].message,
       });
     }
 
-    const expense = await expenseService.deleteExpense(req.body.id);
+    const expense = await expenseService.deleteExpense(req.query.id);
 
     if (expense != null) {
-      return res.status(200).send({ message: "Expense deleted successfully" });
+      return res.status(200).send({ message: "Deleted Successfully" });
     } else {
       return res
         .status(404)
@@ -147,7 +174,7 @@ async function getUsers(req) {
 async function getDashboard(req, res) {
   try {
     const usersData = await getUsers(req);
-    const expenses = await expenseService.getExpense();
+    const expenses = await expenseService.getExpenses();
     let resp = [];
     usersData.map((user) => {
       let total = 0;
@@ -156,10 +183,13 @@ async function getDashboard(req, res) {
           if (member === user._id) {
             total += parseFloat(expense.perHead);
           }
-          // res.push();
         });
       });
-      resp.push({ userName: user.UserName, TotalAmount: total });
+      resp.push({
+        UserName: user.FirstName + " " + user.LastName,
+        TotalAmount: total,
+        CreatedDate: user.CreatedDateTime,
+      });
     });
 
     if (expenses != null) {
@@ -170,7 +200,7 @@ async function getDashboard(req, res) {
         .send({ message: "No expense available in this system" });
     }
   } catch (err) {
-    console.log("Controller Error: Delete Expense " + err.response);
+    console.log("Controller Error: Delete Expense " + err);
     return res.status(500).send({ message: "Internal Server Error" });
   }
 }
@@ -198,4 +228,5 @@ module.exports = {
   updateExpense,
   deleteExpense,
   getDashboard,
+  getDashboardBasedOnMonth,
 };

@@ -6,7 +6,8 @@ const {
     createExpense,
     updateExpense,
     deleteExpense,
-    getDashboard
+    getDashboard,
+    getDashboardBasedOnMonth
 } = require('../controllers/expenseController');
 const jwtAuthValidation = require('./jwtAuth');
 const categoryController = require('../controllers/categoryController');
@@ -17,6 +18,7 @@ router.post('/createExpense', jwtAuthValidation, createExpense); //Creation of e
 router.put('/updateExpense', jwtAuthValidation, updateExpense); //Updation of expense
 router.delete('/deleteExpense', jwtAuthValidation, deleteExpense); //Deletion of expense
 router.get('/getDashboard', jwtAuthValidation, getDashboard); //Dashboard Expense
+router.get('/getDashboardBasedOnMonth', jwtAuthValidation, getDashboardBasedOnMonth); //Dashboard Expense
 router.get('/getCategory', jwtAuthValidation, categoryController.getCategories);
 
 module.exports = router;
