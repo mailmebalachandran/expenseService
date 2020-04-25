@@ -4,4 +4,4 @@
 
 ##npm start
 
-##Runs on mongo cloud
+##Runs on mongo cloud DB
