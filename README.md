@@ -1,7 +1,7 @@
 # rent_expense_service
 
-##npm install
+## npm install
 
-##npm start
+## npm start
 
-##Runs on mongo cloud DB
+## Runs on mongo cloud DB
