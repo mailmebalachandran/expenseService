@@ -4,4 +4,6 @@
 
 ## npm start
 
-## Runs on mongo cloud DB
+## Runs on port: 4000 & mongo cloud DB
+
+### For API Documentation -> host:port/api/expService/docs
